@@ -11,18 +11,54 @@ output = 'my name is sindhura'
 out_filepath = '/home/vicky122/workspace/ga/DL/dl_project/OpticalCharacterRecognition/LARES/Good/T-40411/text_T-40411a.txt'
 target_filepath = '/home/vicky122/workspace/ga/DL/dl_project/OpticalCharacterRecognition/LARES/Good/T-40411/text_T-40411a_GT.txt'
 
-with open(out_filepath, 'r') as file:
-    target_text = file.read()
+file_dir = '/home/vicky122/workspace/ga/DL/dl_project/OpticalCharacterRecognition/LARES/Good/T-40411_output/sub/'
+files = os.listdir(file_dir)
+GT_filename = []
+doctr_filename = []
+AWS_filename = []
+tesseract_filename = []
+wer_doctr=[]
+wer_AWS=[]
+wer_tesseract=[]
+cer_doctr=[]
+cer_AWS=[]
+cer_tesseract=[]
 
-with open(target_filepath, 'r') as file:
-    predicted_text = file.read()
+for filename in files:
+    # if ground truth files exist
+    if '_GT' in filename:
+        GT_filename.append(filename)
+        doctr_filename.append(filename.replace('_GT',''))
+        AWS_filename.append(filename.replace('_GT', '_AWS'))
+        tesseract_filename.append(filename.replace('_GT','_TSRCT'))
 
-# Obtain Sentence-Level Character Error Rate (CER)
-wer = fastwer.score_sent(predicted_text, target_text, char_level=True)
+for i in range(len(doctr_filename)):
 
-# Obtain Sentence-Level Word Error Rate (WER)
-cer = fastwer.score_sent(predicted_text, target_text)
+    with open(os.path.join(file_dir, GT_filename[i]), 'r') as file:
+        target_text = file.read()
 
-head, tail = os.path.split(out_filepath)
-print(f'Word Error Rate for {tail}: {wer}')
-print(f'Character Error Rate for {tail}: {cer}')
+    with open(os.path.join(file_dir, doctr_filename[i]), 'r') as file:
+        predicted_text_doctr = file.read()
+
+    with open(os.path.join(file_dir, AWS_filename[i]), 'r') as file:
+        predicted_text_AWS = file.read()
+
+    with open(os.path.join(file_dir, tesseract_filename[i]), 'r') as file:
+        predicted_text_tesseract = file.read()
+
+    # Obtain Sentence-Level Character Error Rate (CER)
+    wer_doctr.append(fastwer.score_sent(predicted_text_doctr, target_text, char_level=True))
+    wer_AWS.append(fastwer.score_sent(predicted_text_AWS, target_text, char_level=True))
+    wer_tesseract.append(fastwer.score_sent(predicted_text_tesseract, target_text, char_level=True))
+
+    print(f'Word Error Rate for {doctr_filename[i]}: doctr: {wer_doctr[i]}, AWS: {wer_AWS[i]}, tesseract: {wer_tesseract[i]}')
+    # Obtain Sentence-Level Word Error Rate (WER)
+    cer_doctr.append(fastwer.score_sent(predicted_text_doctr, target_text))
+    cer_AWS.append(fastwer.score_sent(predicted_text_AWS, target_text))
+    cer_tesseract.append(fastwer.score_sent(predicted_text_tesseract, target_text))
+
+    print(f'Character Error Rate for {doctr_filename[i]}: doctr: {cer_doctr[i]}, AWS: {cer_AWS[i]}, tesseract: {cer_tesseract[i]}')
+
+# head, tail = os.path.split(out_filepath)
+print(f'Average Word Error Rate for doctr: {np.mean(wer_doctr)}, AWS: {np.mean(wer_AWS)}, Tesseract: {np.mean(wer_tesseract)}')
+print(f'Average Character Error Rate for doctr: {np.mean(cer_doctr)}, AWS: {np.mean(cer_AWS)}, Tesseract: {np.mean(cer_tesseract)}')
