@@ -62,3 +62,10 @@ for i in range(len(doctr_filename)):
 # head, tail = os.path.split(out_filepath)
 print(f'Average Word Error Rate for doctr: {np.mean(wer_doctr)}, AWS: {np.mean(wer_AWS)}, Tesseract: {np.mean(wer_tesseract)}')
 print(f'Average Character Error Rate for doctr: {np.mean(cer_doctr)}, AWS: {np.mean(cer_AWS)}, Tesseract: {np.mean(cer_tesseract)}')
+
+
+################### Output for 1 file ##################
+# Word Error Rate for text_T-40411a.txt: doctr: 15.2632, AWS: 12.5101, tesseract: 36.5992
+# Character Error Rate for text_T-40411a.txt: doctr: 30.75, AWS: 21.0, tesseract: 69.25
+# Average Word Error Rate for doctr: 15.2632, AWS: 12.5101, Tesseract: 36.5992
+# Average Character Error Rate for doctr: 30.75, AWS: 21.0, Tesseract: 69.25
